@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Songübersetzung</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    select {
+      font-size: 1em;
+      margin-bottom: 20px;
+    }
+    .line {
+      margin-bottom: 10px;
+    }
+    .translation {
+      color: gray;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Songübersetzung</h1>
+
+  <label for="modeSelect">Übersetzungsmodus:</label>
+  <select id="modeSelect">
+    <option value="line">Zeilenübersetzung</option>
+    <option value="word">Wortweise Übersetzung</option>
+  </select>
+
+  <div id="output"></div>
+
+  <script>
+    const array1 = [
+      { "en": "cause", "de": "Grund" },
+      { "en": "if", "de": "wenn" },
+      { "en": "and", "de": "und" },
+      { "en": "better", "de": "besser" },
+      { "en": "but", "de": "aber" },
+      { "en": "could", "de": "konnte" },
+      { "en": "eh", "de": "eh" },
+      { "en": "forever", "de": "für immer" },
+      { "en": "found", "de": "gefunden" },
+      { "en": "got", "de": "bekommen" },
+      { "en": "i", "de": "ich" },
+      { "en": "in", "de": "in" },
+      { "en": "it", "de": "es" },
+      { "en": "last", "de": "dauern" },
+      { "en": "life", "de": "Leben" },
+      { "en": "lost", "de": "verloren" },
+      { "en": "never", "de": "nie" },
+      { "en": "pretended", "de": "vorgestellt" },
+      { "en": "was", "de": "war" },
+      { "en": "we", "de": "wir" },
+      { "en": "wonderland", "de": "Wunderland" },
+      { "en": "worse", "de": "schlechter" },
+      { "en": "you", "de": "du" }
+    ];
+
+    const array2 = [
+      { "en": "We found Wonderland", "de": "Wir fanden das Wunderland" },
+      { "en": "You and I got lost in it", "de": "Du und ich verloren uns darin" },
+      { "en": "And we pretended it could last forever", "de": "Und wir taten so, als könnte es ewig dauern" },
+      { "en": "eh, eh", "de": "eh, eh" },
+      { "en": "We found Wonderland", "de": "Wir fanden das Wunderland" },
+      { "en": "You and I got lost in it", "de": "Du und ich verloren uns darin" },
+      { "en": "And life was never worse but never better", "de": "Und das Leben war nie schlechter aber auch nie besser" },
+      { "en": "eh, eh", "de": "eh, eh" }
+    ];
+
+    const dictionary = Object.fromEntries(array1.map(({ en, de }) => [en.toLowerCase(), de]));
+
+    const outputDiv = document.getElementById("output");
+    const modeSelect = document.getElementById("modeSelect");
+
+    function renderLineMode() {
+      outputDiv.innerHTML = "";
+      array2.forEach(({ en, de }) => {
+        const lineEl = document.createElement("div");
+        lineEl.className = "line";
+        lineEl.innerHTML = `<strong>${en}</strong><br><span class="translation">${de}</span>`;
+        outputDiv.appendChild(lineEl);
+      });
+    }
+
+    function renderWordMode() {
+      outputDiv.innerHTML = "";
+      array2.forEach(({ en }) => {
+        const lineEl = document.createElement("div");
+        lineEl.className = "line";
+
+        const words = en.split(/\b/);
+        const translatedLine = words.map(word => {
+          const lower = word.toLowerCase();
+          if (dictionary[lower]) {
+            return `<span title="${dictionary[lower]}">${word}</span>`;
+          }
+          return word;
+        }).join("");
+
+        lineEl.innerHTML = `<strong>${translatedLine}</strong>`;
+        outputDiv.appendChild(lineEl);
+      });
+    }
+
+    modeSelect.addEventListener("change", () => {
+      if (modeSelect.value === "line") {
+        renderLineMode();
+      } else {
+        renderWordMode();
+      }
+    });
+
+    // Initial render
+    renderLineMode();
+  </script>
+
+</body>
+</html>
