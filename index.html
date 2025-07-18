@@ -1,36 +1,115 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <title>Songübersetzung</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎶 Wörter Wonderland</title>
   <style>
     body {
-      font-family: sans-serif;
-      padding: 20px;
+      font-family: Verdana, sans-serif;
+      background: linear-gradient(to bottom right, #f9f9f9, #d8f3ff);
+      text-align: center;
+      padding: 2em;
+      color: #333;
     }
+
+    h1 {
+      font-size: 2em;
+      color: #2a7de1;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 2em;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+
+    .song-text {
+      font-size: 1.4em;
+      margin: 1em 0 0.5em;
+      background: #e0f7fa;
+      padding: 1em;
+      border-radius: 10px;
+    }
+
+    .feedback {
+      font-size: 1.2em;
+      margin-top: 1em;
+      background: #e0f7fa;
+      padding: 1em;
+      border-radius: 10px;
+      height: 27px; 
+      overflow: hidden;
+    }
+
+    .artist {
+      font-size: 1.1em;
+      color: #555;
+      margin-bottom: 1em;
+    }
+
+    button {
+      padding: 0.7em 1.2em;
+      font-size: 1em;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin: 0.5em;
+    }
+
+    .check-btn {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .next-btn {
+      background-color: #2196f3;
+      color: white;
+    }
+
+    .radio-group {
+      margin-bottom: 1em;
+      font-size: 1.1em;
+    }
+
     select {
       font-size: 1em;
-      margin-bottom: 20px;
-    }
-    .line {
-      margin-bottom: 10px;
-    }
-    .translation {
-      color: gray;
+      padding: 0.4em;
+      border-radius: 6px;
+      margin-top: 1em;
     }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h1>🎶 Wonderland 🌈</h1>
+    <h3 class="artist">Taylor Swift</h3>
+    <a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=E048L9PaZsk">🎥 Video ansehen</a>
+    
+    <div class="radio-group">
+      <label><input type="radio" name="direction" value="en-de" checked> 🇬🇧 Englisch → Deutsch</label>
+      <label><input type="radio" name="direction" value="de-en"> 🇩🇪 Deutsch → Englisch</label>
+    </div>
 
-  <h1>Songübersetzung</h1>
+    <div class="radio-group">
+      <label for="modeSelect">Modus wählen:</label>
+      <select id="modeSelect" onchange="changeMode()">
+        <option value="word">🎵 Einzelne Wörter</option>
+        <option value="line">📜 Zeilenweise</option>
+      </select>
+    </div>
 
-  <label for="modeSelect">Übersetzungsmodus:</label>
-  <select id="modeSelect">
-    <option value="line">Zeilenübersetzung</option>
-    <option value="word">Wortweise Übersetzung</option>
-  </select>
-
-  <div id="output"></div>
+    <div class="song-text" id="songText">Lade Inhalt...</div>
+    <div class="feedback" id="feedbackArea"></div>
+    
+    <div>
+      <button class="check-btn" onclick="checkTranslation()">Übersetzung anzeigen</button>
+      <button class="next-btn" onclick="nextWord()">Nächster 🎵</button>
+    </div>
+  </div>
 
   <script>
     const array1 = [
@@ -70,52 +149,64 @@
       { "en": "eh, eh", "de": "eh, eh" }
     ];
 
-    const dictionary = Object.fromEntries(array1.map(({ en, de }) => [en.toLowerCase(), de]));
+    let currentMode = "word";
+    let currentWordIndex = 0;
+    let currentLineIndex = 0;
 
-    const outputDiv = document.getElementById("output");
-    const modeSelect = document.getElementById("modeSelect");
-
-    function renderLineMode() {
-      outputDiv.innerHTML = "";
-      array2.forEach(({ en, de }) => {
-        const lineEl = document.createElement("div");
-        lineEl.className = "line";
-        lineEl.innerHTML = `<strong>${en}</strong><br><span class="translation">${de}</span>`;
-        outputDiv.appendChild(lineEl);
-      });
+    function getDirection() {
+      return document.querySelector('input[name="direction"]:checked').value;
     }
 
-    function renderWordMode() {
-      outputDiv.innerHTML = "";
-      array2.forEach(({ en }) => {
-        const lineEl = document.createElement("div");
-        lineEl.className = "line";
-
-        const words = en.split(/\b/);
-        const translatedLine = words.map(word => {
-          const lower = word.toLowerCase();
-          if (dictionary[lower]) {
-            return `<span title="${dictionary[lower]}">${word}</span>`;
-          }
-          return word;
-        }).join("");
-
-        lineEl.innerHTML = `<strong>${translatedLine}</strong>`;
-        outputDiv.appendChild(lineEl);
-      });
+    function changeMode() {
+      currentMode = document.getElementById("modeSelect").value;
+      resetUI();
     }
 
-    modeSelect.addEventListener("change", () => {
-      if (modeSelect.value === "line") {
-        renderLineMode();
+    function resetUI() {
+      document.getElementById("feedbackArea").innerText = "";
+      if (currentMode === "word") {
+        currentWordIndex = 0;
+        const word = array1[currentWordIndex];
+        document.getElementById("songText").innerText =
+          getDirection() === "en-de" ? word.en : word.de;
       } else {
-        renderWordMode();
+        currentLineIndex = 0;
+        const line = array2[currentLineIndex];
+        document.getElementById("songText").innerText =
+          getDirection() === "en-de" ? line.en : line.de;
       }
-    });
+    }
 
-    // Initial render
-    renderLineMode();
+    function nextWord() {
+      if (currentMode === "word") {
+        currentWordIndex = (currentWordIndex + 1) % array1.length;
+        const word = array1[currentWordIndex];
+        document.getElementById("songText").innerText =
+          getDirection() === "en-de" ? word.en : word.de;
+      } else {
+        currentLineIndex = (currentLineIndex + 1) % array2.length;
+        const line = array2[currentLineIndex];
+        document.getElementById("songText").innerText =
+          getDirection() === "en-de" ? line.en : line.de;
+      }
+      document.getElementById("feedbackArea").innerText = "";
+    }
+
+    function checkTranslation() {
+      const direction = getDirection();
+      if (currentMode === "word") {
+        const word = array1[currentWordIndex];
+        document.getElementById("feedbackArea").innerText =
+          direction === "en-de" ? word.de : word.en;
+      } else {
+        const line = array2[currentLineIndex];
+        document.getElementById("feedbackArea").innerText =
+          direction === "en-de" ? line.de : line.en;
+      }
+    }
+
+    // Initialisieren
+    resetUI();
   </script>
-
 </body>
 </html>
