@@ -70,6 +70,11 @@
       color: white;
     }
 
+    .back-btn {
+      background-color: #ff9800;
+      color: white;
+    }
+
     .radio-group {
       margin-bottom: 1em;
       font-size: 1.1em;
@@ -106,6 +111,7 @@
     <div class="feedback" id="feedbackArea"></div>
     
     <div>
+      <button class="back-btn" onclick="prevWord()">⬅️ Zurück</button>
       <button class="check-btn" onclick="checkTranslation()">Übersetzung anzeigen</button>
       <button class="next-btn" onclick="nextWord()">Nächster 🎵</button>
     </div>
@@ -185,6 +191,21 @@
           getDirection() === "en-de" ? word.en : word.de;
       } else {
         currentLineIndex = (currentLineIndex + 1) % array2.length;
+        const line = array2[currentLineIndex];
+        document.getElementById("songText").innerText =
+          getDirection() === "en-de" ? line.en : line.de;
+      }
+      document.getElementById("feedbackArea").innerText = "";
+    }
+
+    function prevWord() {
+      if (currentMode === "word") {
+        currentWordIndex = (currentWordIndex - 1 + array1.length) % array1.length;
+        const word = array1[currentWordIndex];
+        document.getElementById("songText").innerText =
+          getDirection() === "en-de" ? word.en : word.de;
+      } else {
+        currentLineIndex = (currentLineIndex - 1 + array2.length) % array2.length;
         const line = array2[currentLineIndex];
         document.getElementById("songText").innerText =
           getDirection() === "en-de" ? line.en : line.de;
